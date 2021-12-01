@@ -1,0 +1,110 @@
+package com.example.more_javafx;
+
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
+
+public class HelloController {
+    @FXML
+    public  TextField id;
+    public TextField name;
+    public TextField age;
+    public Label text1;
+    public void insert(ActionEvent e)
+    {
+        try {
+            Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/javafx","root","root");
+            Statement stmt=con.createStatement();
+            String a= "select count(*) from student where id="+Integer.parseInt(id.getText());
+            ResultSet ans=stmt.executeQuery(a);
+            ans.next();
+            if(ans.getInt(1)==1){
+                text1.setText("DATA OF GIVEN ID ALREADY EXISTS");
+                return;
+            }
+            String sql="Insert into student values ("+Integer.parseInt(id.getText())+",'"+name.getText()+"',"+Integer.parseInt(age.getText())+")";
+            stmt.executeUpdate(sql);
+            con.close();
+            text1.setText("DATA INSERTED");
+        } catch (Exception m) {
+            m.printStackTrace();
+        }
+    }
+    public void delete(){
+        try {
+            Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/javafx","root","root");
+            Statement stmt=con.createStatement();
+            String a= "select count(*) from student where id="+Integer.parseInt(id.getText());
+            ResultSet ans=stmt.executeQuery(a);
+            ans.next();
+            if(ans.getInt(1)==0){
+                text1.setText("DATA OF GIVEN ID IS NOT AVAILABLE");
+                return;
+            }
+            String sql="Delete from student where id ="+Integer.parseInt(id.getText());
+            stmt.executeUpdate(sql);
+            con.close();
+            text1.setText("DATA DELETED");
+        } catch (Exception m) {
+            m.printStackTrace();
+        }
+    }
+    public void update(){
+        try {
+            Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/javafx","root","root");
+            Statement stmt=con.createStatement();
+            String an= "select count(*) from student where id="+Integer.parseInt(id.getText());
+            ResultSet ans=stmt.executeQuery(an);
+            ans.next();
+            if(ans.getInt(1)==0){
+                text1.setText("DATA OF GIVEN ID IS NOT AVAILABLE");
+                return;
+            }
+            if(name.getText().isEmpty()){
+                String sql="Update student set age="+Integer.parseInt(age.getText())+" where id ="+Integer.parseInt(id.getText());
+                stmt.executeUpdate(sql);
+                con.close();
+            }else if(age.getText().isEmpty()){
+                String a= name.getText();
+                String sql="Update student set name="+"'"+name.getText()+"'"+" where id ="+Integer.parseInt(id.getText());
+                stmt.executeUpdate(sql);
+                con.close();
+            }else{
+                String sql="Update student set age="+Integer.parseInt(age.getText())+" where id ="+Integer.parseInt(id.getText());
+                String sql1="Update student set name="+"'"+name.getText()+"'"+" where id ="+Integer.parseInt(id.getText());
+                stmt.executeUpdate(sql);
+                stmt.executeUpdate(sql1);
+                con.close();
+            }
+            text1.setText("DATA UPDATED");
+        } catch (Exception m) {
+            m.printStackTrace();
+        }
+    }
+    public void select(){
+        try {
+            Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/javafx","root","root");
+            Statement stmt=con.createStatement();
+            String an= "select count(*) from student where id="+Integer.parseInt(id.getText());
+            ResultSet ans=stmt.executeQuery(an);
+            ans.next();
+            if(ans.getInt(1)==0){
+                text1.setText("DATA OF GIVEN ID IS NOT AVAILABLE");
+                return;
+            }
+            String sql="Select * from student where id="+Integer.parseInt(id.getText());
+            ResultSet rs=stmt.executeQuery(sql);
+            rs.next();
+            text1.setText("ID : "+rs.getString(1)+", "+"NAME : "+rs.getString(2)+", "+"AGE : "+rs.getString(3));
+
+        } catch (Exception m) {
+            m.printStackTrace();
+        }
+    }
+}
